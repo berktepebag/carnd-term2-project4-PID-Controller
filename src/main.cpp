@@ -54,7 +54,7 @@ int main()
   PID pid;
   // TODO: Initialize the pid variable.
   //pid.Init(0.1,0.001,0.9);   
-  pid.Init(0.1,0.001,0.8);   
+  pid.Init(0.1,0.0001,0.8);   
 
   h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
@@ -84,30 +84,13 @@ int main()
             best_cte = 1000000;
             firstRun = false;                    
           }     
-          //*************************************************************//
-          //*****Control the Kp,Ki,Kd and throtthle according to CTE.****//
-
-          //Slow down, car is not stable.
-          if (fabs(cte) > 0.5 && speed > 15)
+          //Track is counter clock wise, which causes an huge total cte after one loop. 
+          //Car starts oscillation and goes off the track. Set zero after some time to avoid this.
+          if (counter%1000 == 0)
           {
-            throttle = 0.1;
-            pid.Init(0.1,0.001,0.8);
+            pid.cte_i /= 2;            
           }
-          //Car is stable enough, increase speed.
-          else if(fabs(cte) >= 0.25 && fabs(cte) < 0.5 && speed > 15){
-            throttle = 0.3;
-            pid.Init(0.075,0.001,0.8);
-          }
-          //Car is doing fine but bit slow, increase the speed bit more.
-          else if(fabs(cte) < 0.25){
-            throttle = 1.0;            
-          }
-          //Especially at low speeds, increase speed fastly.   
-          else if(speed < 10){
-            throttle = 3.0;
-          }
-          //*************************************************************//
-          //*****Control the Kp,Ki,Kd and throtthle according to CTE.****//
+          throttle = pid.SetThrottle(cte,speed);
 
           cout << "counter/counter_limiter: " << counter << " / " << counter_limiter <<endl;
 

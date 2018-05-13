@@ -16,6 +16,10 @@ public:
   double Kp_;
   double Ki_;
   double Kd_; 
+
+  //Total CTE error
+  double cte_i;
+
   /*
   * Constructor
   */
@@ -40,6 +44,11 @@ public:
   * Calculate the total PID error.
   */
   double TotalError();
+
+  /*
+  * Calculate the throttle.
+  */
+  double SetThrottle(double cte, double speed);
 };
 
 #endif /* PID_H */

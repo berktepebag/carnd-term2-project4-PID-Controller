@@ -9,6 +9,9 @@ using namespace std;
 * TODO: Complete the PID class.
 */
 
+bool printInfo = false;
+double diff_cte, prev_cte;
+
 PID::PID() {
 
 }
@@ -20,20 +23,15 @@ void PID::Init(double Kp, double Ki, double Kd) {
 	//cout << "************pid.Kp: "<<Kp << " pid.Ki: "<<Ki <<" pid.Kd: "<<Kd << "**********"<<endl;  
 	Kp_ = Kp;
 	Ki_ = Ki;
-	Kd_ = Kd;
+	Kd_ = Kd;	
 }
 
-bool printInfo = false;
-double diff_cte, prev_cte;
-
-void PID::UpdateError(double cte) {
-
-	double total_cte = 0;
+void PID::UpdateError(double cte) {	
 
 	//cout << "prev_cte beginning: " << prev_cte << endl;
 
 	diff_cte = cte - prev_cte;
-	total_cte += cte;   
+	cte_i += cte;   
 	prev_cte = cte;
 
 	if(printInfo){
@@ -41,11 +39,11 @@ void PID::UpdateError(double cte) {
 	cout << "prev_cte updated: " << prev_cte << endl;
 	cout << "cte: " << cte << endl;
 	cout << "diff_cte: " << diff_cte << endl;
-	cout << "total_cte: " << total_cte << endl;
+	cout << "total_cte: " << cte_i << endl;
 	cout << "*************************" << endl;}
 
 	p_error_ = Kp_ * cte;
-	i_error_ = Ki_ * total_cte;
+	i_error_ = Ki_ * cte_i;
 	d_error_ = Kd_ * diff_cte;	
 
 	if(printInfo){
@@ -64,3 +62,32 @@ double PID::TotalError() {
 	return total_error;
 }
 
+double PID::SetThrottle(double cte, double speed)
+{
+	//*************************************************************//
+    //*****Control the Kp,Ki,Kd and throttle according to CTE.****//
+    double throttle = 0.3;
+
+    //Slow down, car is not stable.
+	if (fabs(cte) > 0.5 && speed > 15)
+	{
+		throttle = 0.1;
+		Init(0.1,0.0001,0.8);
+	}
+    //Car is stable enough, increase speed.
+	else if(fabs(cte) >= 0.25 && fabs(cte) < 0.5 && speed > 15){
+		throttle = 0.3;
+		Init(0.075,0.0001,0.8);
+	}
+    //Car is doing fine but bit slow, increase the speed bit more.
+	else if(fabs(cte) < 0.25){
+		throttle = 0.5;            
+	}
+    //Especially at low speeds, increase speed fastly.   
+	else if(speed < 10){
+		throttle = 3.0;
+	}
+
+    return throttle;
+
+}
