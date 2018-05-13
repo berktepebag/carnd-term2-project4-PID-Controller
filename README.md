@@ -1,7 +1,8 @@
-# CarND-Controls-PID
-Self-Driving Car Engineer Nanodegree Program
+## PID Control Project
 
-## Proportional-Integral-Derivative (PID) Controller
+### Self-Driving Car Engineer Nanodegree Program
+
+### Proportional-Integral-Derivative (PID) Controller
 
 Proportional-Integral-Derivative (PID) Controller, controls the machine according to some error, an error which is calculated according to expected (middle of the lane in our situation) and measured (distance from middle of the lane, CTE).
 
@@ -17,7 +18,7 @@ In the main.cpp, there is a type of twiddle I have implemented which looks for C
 
 Tried running with K_proportional = 1.0, K_integral = 0, K_derivative = 0 throttle = 0.1 . K_proportional settled around 0.1. Fixed K_proportional to 0.1. 
 
-<img width="800" alt="After 17 Trials Kp settles around 0.1" src="/imgs/PID_Project_Finding_Kp.jpg">
+<img width="800" alt="After 17 Trials Kp settles around 0.1" src="/imgs/PID_Project_Finding_Kp.JPG">
 
 2- Integral:
 
@@ -30,6 +31,8 @@ If error is not going to zero in a certain time, total error will increase so ou
 Derivative_error = - (CTE - prev_CTE) * K_derivative
 
 Derivative, in this case looks for the difference between last time step CTE and current CTE (time step or delta time = 1). If difference is high, steering angle will increase to put car back on the track. ie. Car turns a sharp left, which causes CTE to increase suddenly. Since difference will be high, steering angle will also increase with it.
+
+
 
 
 
